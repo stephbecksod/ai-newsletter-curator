@@ -1,0 +1,15 @@
+# Core dependencies
+anthropic>=0.40.0          # Claude API client
+pyyaml>=6.0.1              # YAML configuration parsing
+python-dotenv>=1.0.0       # Environment variable management
+
+# MCP (Model Context Protocol) support
+mcp>=1.0.0                 # MCP client library
+
+# Utilities
+python-dateutil>=2.8.2     # Date parsing and manipulation
+markdown>=3.5.0            # Markdown processing (if needed)
+
+# Development dependencies
+pytest>=7.4.0              # Testing framework (optional)
+black>=23.0.0              # Code formatting (optional)
