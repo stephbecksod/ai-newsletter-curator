@@ -79,10 +79,15 @@ Get your API key from: https://console.anthropic.com/
 
 ### 6. Gmail Authentication
 
-On first use, the Gmail MCP server will:
-1. Open your browser for Google OAuth authentication
-2. Store credentials securely in `~/.gmail-mcp/`
-3. Use saved credentials automatically for future requests
+**IMPORTANT: MCP OAuth Credentials Location**
+- The Gmail MCP server stores OAuth credentials in: `C:\Users\steph\.gmail-mcp\gmail-token.json`
+- The Python Gmail text extractor (`gmail_text_extractor.py`) automatically reuses these credentials
+- No separate OAuth setup needed if MCP is already configured!
+
+On first MCP use:
+1. Browser opens for Google OAuth authentication
+2. Credentials stored securely in `~/.gmail-mcp/`
+3. Subsequent requests use saved credentials automatically
 
 ## Usage
 

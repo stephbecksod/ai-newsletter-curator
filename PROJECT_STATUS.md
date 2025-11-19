@@ -32,42 +32,80 @@ python newsletter_curator.py --start 2025-11-04 --end 2025-11-10
 - [x] Installed `@gongrzhe/server-gmail-autoauth-mcp` npm package globally
 - [x] Created `~/.claude/mcp_settings.json` configuration file
 - [x] Updated `.gitignore` to exclude outputs/, credentials, and sensitive files
-- [ ] **PENDING:** Restart Claude Code and test Gmail connectivity (will do after building project structure)
+- [x] Restarted Claude Code and tested Gmail connectivity
+- [x] Successfully searched Gmail and retrieved newsletters
+
+### Phase 2: Project Structure
+- [x] `newsletter_curator.py` - Main orchestration script created
+- [x] `config.yaml` - Newsletter sources and formatting settings configured
+- [x] `requirements.txt` - Python dependencies listed
+- [x] `.env.example` - Template for API keys created
+- [x] `README.md` - Setup and usage instructions written
+- [x] `outputs/` directory - Created with .gitkeep
+- [x] All reference documents loaded and integrated
+
+### Phase 3: Step 1 - Newsletter Extraction ✅ COMPLETE
+- [x] Gmail search query tested (found 35 newsletters for Nov 3-10, 2025)
+- [x] Implemented plain text extraction strategy (92% token reduction)
+- [x] Successfully processed ALL 35 newsletters using Gmail API + Claude API
+- [x] Extracted **352 news stories** from 35 newsletters
+- [x] Saved complete dataset to `outputs/raw_stories_2025-11-03_to_2025-11-10_COMPLETE.json`
+- [x] **SOLVED:** Token optimization via plain text extraction (no HTML/images/formatting)
+
+**Progress:** 35 of 35 newsletters fully processed (100%) ✅
 
 ---
 
-## 🚧 Current Phase: Project Structure
+## 🚧 Current Phase: Step 3 - Human Review & Approval
 
-### Phase 3: Create Project Files
-**Status:** In Progress
+### Phase 1 Complete! ✅ (Step 1: Extraction)
+**Solution Implemented:** Plain text extraction via Gmail API
+- 92% token reduction (28K → 2K tokens per newsletter)
+- All 35 newsletters processed successfully
+- 352 news stories extracted
+- Output: `outputs/raw_stories_2025-11-03_to_2025-11-10_COMPLETE.json`
 
-Files to create:
-- [ ] `newsletter_curator.py` - Main orchestration script
-- [ ] `config.yaml` - Newsletter sources and formatting settings
-- [ ] `requirements.txt` - Python dependencies
-- [ ] `.env.example` - Template for API keys
-- [ ] `README.md` - Setup and usage instructions
-- [ ] `outputs/` directory - For generated newsletter copy (gitignored)
+### Phase 2 Complete! ✅ (Step 2: Deduplication & Ranking)
+**Completed:** November 18, 2025
+- 352 raw stories → 114 deduplicated stories
+- 238 stories successfully merged
+- Categorized into: Top 5 (5), Secondary (5), Launches (51), Other (53)
+- Output: `outputs/ranked_stories_2025-11-03_to_2025-11-10.json`
+
+**Top 5 Stories Selected:**
+1. OpenAI-AWS $38B cloud deal (6 mentions)
+2. Apple-Google $1B/year Gemini for Siri (6 mentions)
+3. Microsoft $25B+ AI infrastructure deals (6 mentions)
+4. Anthropic $70B revenue projection by 2028 (4 mentions)
+5. Tesla shareholders approve Musk's $1T pay package (3 mentions)
+
+**Next Steps:**
+1. **Human review:** Review and approve the ranked story list
+2. If approved → Proceed to Step 4 (Research top 5 stories)
+3. Then Steps 5-8 (Formatting & final output)
 
 ---
 
 ## 📋 Upcoming Phases
 
-### Phase 2: Newsletter Extraction
+### Step 1: Newsletter Extraction (CONTINUATION)
 **Reference:** `docs/Newsletter Copy Creation Workflow.md` (Step 1)
 
-Tasks:
-- [ ] Extract raw newsletter content from Gmail for date range
-- [ ] Use Claude API to identify actual news (not tips/tools/tutorials)
-- [ ] Store: headline, source, date, summary, URL (if available)
-- [ ] Output: Raw list of all news stories (un-deduplicated, unranked)
+**Status:** 20% complete (8 of 40 newsletters processed)
 
-**Key Requirements:**
-- Extract ONLY news stories (partnerships, products, features, fundraising, valuations)
-- No tips, tools, tutorials, or opinion content
-- Create standalone list that doesn't get overridden by next steps
+Remaining tasks:
+- [ ] Implement token optimization strategy for HTML-heavy newsletters
+- [ ] Extract remaining 32 newsletters from Gmail
+- [ ] Update `raw_stories_2025-11-03_to_2025-11-10.json` with all stories
+- [ ] Verify all news stories extracted (not tips/tools/tutorials)
 
-### Phase 3: Deduplication & Ranking
+**Already Completed:**
+- [x] Gmail search and email retrieval working
+- [x] Claude API extraction working for well-formatted emails
+- [x] 43 stories extracted from 8 newsletters
+- [x] Raw JSON output structure established
+
+### Step 2: Deduplication & Ranking
 **Reference:** `docs/Newsletter Copy Creation Workflow.md` (Steps 2-3)
 
 Tasks:
@@ -140,9 +178,20 @@ Historical examples of finished newsletters (week by week). Shows prioritization
 - Provides flexibility for different time periods
 - No assumptions about "current week"
 
-### Gmail MCP Authentication
-**First Use:** Browser will open for Google authentication, credentials stored in `~/.gmail-mcp/`
-**Subsequent Uses:** Saved credentials used automatically
+### Gmail Authentication & Credentials
+
+**MCP OAuth Token Location (IMPORTANT):**
+- `C:\Users\steph\.gmail-mcp\gmail-token.json`
+- Contains OAuth access token, refresh token, client ID/secret
+- Used by both MCP server AND Python Gmail text extractor
+
+**First Use:** Browser opens for Google authentication, credentials saved automatically
+**Subsequent Uses:** Saved credentials reused (no re-authentication needed)
+
+**Python Gmail API:**
+- The `gmail_text_extractor.py` script automatically loads MCP credentials
+- No separate OAuth setup required
+- Falls back to standard OAuth flow if MCP token not found
 
 ### File Structure
 ```

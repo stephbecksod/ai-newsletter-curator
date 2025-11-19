@@ -3,6 +3,11 @@ anthropic>=0.40.0          # Claude API client
 pyyaml>=6.0.1              # YAML configuration parsing
 python-dotenv>=1.0.0       # Environment variable management
 
+# Gmail API (for plain text extraction)
+google-api-python-client>=2.100.0  # Gmail API client
+google-auth-httplib2>=0.1.1        # Google auth
+google-auth-oauthlib>=1.1.0        # OAuth flow
+
 # MCP (Model Context Protocol) support
 mcp>=1.0.0                 # MCP client library
 

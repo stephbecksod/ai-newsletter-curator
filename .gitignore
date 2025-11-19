@@ -211,3 +211,7 @@ outputs/
 *.docx
 token.json
 credentials.json
+.gmail_credentials/
+.claude/
+nul
+debug_*.txt

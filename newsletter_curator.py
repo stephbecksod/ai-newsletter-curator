@@ -93,9 +93,11 @@ class NewsletterCurator:
         Phase 1: Extract news stories from newsletters using Claude API.
 
         This phase:
-        - Identifies actual news stories (not tips, tools, tutorials)
-        - Extracts headline, source, date, summary, URL
-        - Creates raw unranked list
+        1. Fetches newsletters from Gmail using MCP
+        2. Extracts entire newsletter content
+        3. Identifies actual news stories (not tips, tools, tutorials)
+        4. Extracts headline, source, date, summary, URL
+        5. Creates raw unranked list
 
         Args:
             email_data: Email query information
@@ -104,52 +106,150 @@ class NewsletterCurator:
             List of extracted news stories
         """
         print("\n📰 Phase 1: Extracting news stories...")
+        print(f"Searching Gmail for newsletters...")
+        print(f"Query: {email_data['query']}")
 
-        # Create prompt for Claude API
-        system_prompt = f"""You are an AI assistant helping to extract news stories from newsletters.
+        # Step 1: Search for newsletters using Gmail MCP
+        try:
+            # Import Gmail MCP tools at runtime
+            from mcp__gmail__search_emails import mcp__gmail__search_emails
+            from mcp__gmail__read_email import mcp__gmail__read_email
 
-Reference the following workflow document:
+            # Search for all newsletters in date range
+            search_results = mcp__gmail__search_emails(
+                query=email_data['query'],
+                maxResults=100  # Get up to 100 newsletters
+            )
+
+            if not search_results or len(search_results) == 0:
+                print("⚠️  No newsletters found for the specified date range.")
+                return []
+
+            print(f"✓ Found {len(search_results)} newsletters")
+
+            # Step 2: Read each newsletter and collect full content
+            newsletters = []
+            for i, email_summary in enumerate(search_results, 1):
+                print(f"Reading newsletter {i}/{len(search_results)}: {email_summary.get('Subject', 'No subject')}")
+
+                email_content = mcp__gmail__read_email(messageId=email_summary['ID'])
+                newsletters.append({
+                    'id': email_summary['ID'],
+                    'subject': email_summary.get('Subject', ''),
+                    'from': email_summary.get('From', ''),
+                    'date': email_summary.get('Date', ''),
+                    'content': email_content
+                })
+
+        except ImportError:
+            print("\n⚠️  Gmail MCP tools not available in Python runtime.")
+            print("Note: This implementation expects to run within Claude Code environment")
+            print("with MCP tools available. Returning empty list for now.")
+            return []
+        except Exception as e:
+            print(f"\n❌ Error fetching newsletters: {e}")
+            return []
+
+        # Step 3: Use Claude API to extract news stories from all newsletters
+        print(f"\n🤖 Analyzing {len(newsletters)} newsletters with Claude API...")
+
+        # Prepare newsletter content for Claude
+        newsletters_text = ""
+        for nl in newsletters:
+            newsletters_text += f"\n\n--- Newsletter from {nl['from']} ---\n"
+            newsletters_text += f"Date: {nl['date']}\n"
+            newsletters_text += f"Subject: {nl['subject']}\n"
+            newsletters_text += f"Content:\n{nl['content']}\n"
+            newsletters_text += "--- End Newsletter ---\n"
+
+        # Create extraction prompt
+        system_prompt = f"""You are an AI assistant helping to extract news stories from AI newsletters.
+
+IMPORTANT WORKFLOW REFERENCE:
 {self.workflow_docs['workflow']}
 
-Your task is to:
-1. Review newsletters from the specified senders and date range
-2. Extract ONLY news stories (new partnerships, products, features, fundraising, valuations)
-3. Skip tips, tools, tutorials, and opinion content
-4. For each story, extract: headline, source, date, summary, URL (if available)
+Your task for Step 1:
+1. Read through ALL the newsletter content carefully
+2. Identify and extract ONLY actual news stories
+3. News includes: new partnerships, products, features, fundraising, valuations, company announcements
+4. SKIP: tips, tools, tutorials, prompts, how-to guides, opinion pieces, commentary
 
-Remember: This is Step 1 from the workflow - raw extraction only, no deduplication or ranking yet."""
+For each news story you find, extract:
+- headline: Clear, descriptive headline (use newsletter's or write your own)
+- source: Newsletter name (use consistent naming: "Superhuman", "Axios AI+", "TechCrunch", "That Startup Guy", "The Rundown AI", "Startup Intros")
+- date: Email received date (YYYY-MM-DD format)
+- summary: 1-3 sentence summary of what happened
+- url: Link to the full story if provided (null if not available)
 
-        user_prompt = f"""Please extract all news stories from newsletters matching this Gmail query:
-{email_data['query']}
-
-Date range: {email_data['start_date']} to {email_data['end_date']}
-Sources: {', '.join(email_data['sources'])}
-
-Use the Gmail MCP tools to search and read these emails, then extract all news stories into a structured list.
-
-Output format (JSON):
+Output ONLY valid JSON in this exact format:
 {{
   "stories": [
     {{
-      "headline": "Story headline",
+      "headline": "Story headline here",
       "source": "Newsletter name",
       "date": "YYYY-MM-DD",
-      "summary": "1-3 sentence summary",
-      "url": "https://... (if available, otherwise null)"
+      "summary": "Brief summary here",
+      "url": "https://example.com or null"
     }}
   ]
-}}"""
+}}
 
-        print("Calling Claude API for news extraction...")
-        print("(This will use Gmail MCP server to fetch and read emails)")
+This is raw extraction - do NOT deduplicate or rank yet. Extract everything that qualifies as news."""
 
-        # Note: This is a placeholder for the actual API call
-        # In a real implementation, this would make the API call with MCP tools
-        print("\n⚠️  Implementation Note:")
-        print("This phase requires Claude API to have access to Gmail MCP tools.")
-        print("Currently in development - manual email processing needed.")
+        user_prompt = f"""Extract all news stories from these newsletters:
 
-        return []
+Date range: {email_data['start_date']} to {email_data['end_date']}
+Newsletter sources: {', '.join(email_data['sources'])}
+
+Here are the newsletters:
+{newsletters_text}
+
+Extract all news stories and return them as JSON."""
+
+        try:
+            # Call Claude API for extraction
+            response = self.anthropic_client.messages.create(
+                model=self.config['claude']['model'],
+                max_tokens=self.config['claude']['max_tokens'],
+                temperature=self.config['claude']['temperature'],
+                system=system_prompt,
+                messages=[{
+                    "role": "user",
+                    "content": user_prompt
+                }]
+            )
+
+            # Parse response
+            response_text = response.content[0].text
+
+            # Extract JSON from response (handle markdown code blocks)
+            import re
+            json_match = re.search(r'```json\s*(.*?)\s*```', response_text, re.DOTALL)
+            if json_match:
+                json_text = json_match.group(1)
+            else:
+                # Try to find raw JSON
+                json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+                if json_match:
+                    json_text = json_match.group(0)
+                else:
+                    json_text = response_text
+
+            # Parse JSON
+            result = json.loads(json_text)
+            stories = result.get('stories', [])
+
+            print(f"✓ Extracted {len(stories)} news stories")
+
+            return stories
+
+        except json.JSONDecodeError as e:
+            print(f"❌ Error parsing JSON response: {e}")
+            print(f"Response text: {response_text[:500]}...")
+            return []
+        except Exception as e:
+            print(f"❌ Error calling Claude API: {e}")
+            return []
 
     def deduplicate_and_rank(self, stories: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
         """
