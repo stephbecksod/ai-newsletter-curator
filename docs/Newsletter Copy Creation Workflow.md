@@ -71,37 +71,88 @@ Claude must also tag whether each story is a __launch__ \(e\.g\., new model, com
 
 ### <a id="_nf1t21jm5z03"></a>__Ranking__
 
-Claude must rank stories based on:
+Claude must rank stories using a __weighted, editorial approach__ that prioritizes strategic significance over mechanical metrics\.
 
-1. Whether multiple newsletters mentioned it
-2. Whether it appeared as a headline anywhere
-3. Whether it involves a major AI company \(OpenAI, Anthropic, Google/Gemini, Meta, xAI, Amazon, Microsoft, etc\.\)
-4. Whether it is truly significant \(use judgment—big companies release lots of minor things, small companies do really amazing things, and sometimes news is not company specific\)
-5. Whether a casual AI reader would need to know this to feel “caught up” for the week
+#### __Primary Ranking Criteria \(in priority order\):__
+
+1. __"Why it matters" strength__ — Does this story signal something bigger about the future of AI, platform power, market structure, or societal impact?
+2. __Story type weighting__ — Apply category\-specific priorities \(see below\)
+3. __Multiple newsletter mentions__ — 2\+ mentions for high\-priority story types, 3\+ for others
+4. __Headline appearance__ — Was it featured as a headline in any newsletter?
+5. __Major AI company involvement__ — But not sufficient alone for top ranking
+
+#### __Story Type Priorities:__
+
+__HIGH\-PRIORITY STORY TYPES__ \(boost ranking even with fewer mentions\):
+
+- __Platform/ecosystem battles__ — Stories about platforms blocking or enabling AI \(e\.g\., Amazon blocking Perplexity, app store policies, API access restrictions\)
+- __Controversy & safety__ — Model removals, lawsuits, ethical concerns, regulatory action, AI failures with consequences
+- __Strategic moonshots__ — Long\-term vision announcements \(e\.g\., space data centers, AGI timelines, fundamental research breakthroughs\)
+- __Market structure changes__ — New business models, pricing disruptions, competitive dynamics shifts, strategic partnerships that reshape industries
+
+__MEDIUM\-PRIORITY STORY TYPES__ \(standard newsworthiness criteria\):
+
+- __Major product launches__ — Significant new capabilities, models, or features from leading companies
+- __Funding & valuations__ — Large rounds \($100M\+\) or notable valuations that signal market direction
+- __Enterprise adoption__ — Major companies adopting AI in transformative ways
+
+__LOWER\-PRIORITY STORY TYPES__ \(require more mentions to rank highly\):
+
+- __Infrastructure capex__ — Pure spending announcements on GPUs, data centers, cloud deals \(unless they signal strategic shifts like diversification away from a single provider\)
+- __Corporate governance__ — Executive compensation, board changes \(unless directly AI\-related\)
+- __Incremental updates__ — Features that are evolutionary, not revolutionary
+
+#### __Special Rules:__
+
+__CONTROVERSY BOOST:__ Stories involving controversy, lawsuits, safety concerns, model removals, or regulatory action automatically get \+1\-2 ranking tiers, even with lower mention counts\. These stories signal important "what could go wrong" narratives that readers need to understand\.
+
+__LAUNCH vs\. NEWS DISTINCTION:__
+
+- __NOT a launch:__ Research projects, long\-term visions \(Project Suncatcher\), strategic partnerships that change market structure, moonshot announcements without near\-term availability
+- __IS a launch:__ Products/features available now or within 3 months, API releases, model updates, tactical integrations
+
+__INFRASTRUCTURE CONTEXT:__ Large GPU/cloud deals \(even $25B\+\) should be ranked as secondary stories unless they represent strategic shifts\. The dollar amount alone is not newsworthy—the strategic implication is\.
 
 For examples of story selection for each section, refer to the Newsletter Story Example document\. In this document, there are 4 weeks worth of stories\. The earliest two weeks do not have launches, as I added them later\. Review this to understand the type of stories I want to emphasize\.
 
+#### __Output Categories:__
+
 Claude should produce:
 
+__News Stories \(Top 20\):__
 - __Top 5 stories__
-- __Next ~4–5 secondary stories__
-- __Launch list: a list of all launches not listed in the stories above__
-- Everything else that was in the news but not listed in the three sections above
+- __Secondary 5 stories__ \(the next 5 highest\-ranked after top 5\)
+- __Next 10 stories__ \(ranked 11\-20, for human review\)
 
-Each story in each section should have a brief summary to describe the news event, and one sentence on why it matters\.
+__Launches \(Top 20\):__
+- __Top 20 launches__ ranked using the same weighted approach as news stories
+- Apply the same ranking criteria \(strategic significance, mention count, major companies, etc\.\)
+- Focus on launches with the most significant impact on the AI ecosystem
 
-The output of this step should be a second list of deduped, ranked stories with summaries\. The stories should be categorized into Top Stories, Other Headlines, Launches, and Other\.  
+__Other:__
+- __Remaining launches__ \(all launches not in top 20\)
+- __Everything else__ that was in the news but not listed in the sections above
+
+Each story/launch in the top 20 should have:
+
+- Final headline
+- Brief summary describing the news event or launch
+- One sentence on "why it matters"
+
+The output of this step should be a second list of deduped, ranked stories with summaries\. The stories should be categorized into Top 5, Secondary 5, Next 10, Top 20 Launches, Other Launches, and Other Stories\.  
 
 
 ## <a id="_jrk8d75xkyax"></a>__STEP 3: Human Review of Ranked List__
 
-Claude generates a ranked list including:
+Claude generates a ranked list of the __top 20 stories__ including:
 
 - Final headline
 - Summary
-- One\-sentence “why it matters”
+- One\-sentence "why it matters"
 
-Claude presents the full list from step 2, categorized as indicated, to you to review and adjust\. You may reorder or edit as needed\.
+Claude presents the top 20 stories \(Top 5 \+ Secondary 5 \+ Next 10\) from step 2, clearly categorized, to you to review and adjust\. This allows you to see beyond the immediate top 10 and make better editorial decisions about which stories belong in the final output\.
+
+You may reorder, promote/demote stories between categories, or edit as needed\.
 
 Claude must __wait for your approval__ before producing final formatted output\.
 
@@ -111,7 +162,7 @@ Once the story list is approved, Claude should research each of the top 5 storie
 
 ## <a id="_8y5h6x9nwld8"></a>__STEP 5: Top 5 Story Formatting__
 
-After the ranking is approved and the top story research is complete, generate the content for the top stories\. Follow the Newsletter Style Guide document, section 1 on “Top Stories Style Guide \(Headline \+ Summary \+ Why It Matters\)\. You can also reference the News Stories Example document to see the full set of top stories in the past and understand what the content looked like\.
+After the ranking is approved and the top story research is complete, generate the content for the top stories\. Follow the Newsletter Style Guide document, section 1 on "Top Stories Style Guide \(Headline \+ Summary \+ Why It Matters\)\. You can also reference the News Stories Example document to see the full set of top stories in the past and understand what the content looked like\.
 
 Each story must have a headline, a summary, and a why it matters section\.
 
@@ -121,13 +172,23 @@ Each story must have a headline, a summary, and a why it matters section\.
 - Summary: ideally 2 bold phrases, max 2
 - Bold phrases should be key words, actions, or companies
 
+### <a id="_character_count_targets"></a>__Character Count Targets__
+
+__CRITICAL:__ Stories must be concise\. Target these character counts based on historical examples:
+
+- __Headlines:__ ~50 characters \(range: 42\-62 characters\)
+- __Summaries:__ ~233 characters \(range: 202\-288 characters\)
+- __Why it matters:__ ~124 characters \(range: 85\-165 characters\)
+
+These targets ensure content fits properly in the slide layout without being too verbose\. When drafting, count characters and edit ruthlessly to stay within these ranges\.
+
 ### <a id="_fh9nqgcfir51"></a>__Slide layout constraints Claude must write to__
 
 - Headline fits exactly 3 lines \(Playfair Display Medium 60 → 9\.31in x 5\.21in box\)
 - Summary is 4–6 lines \(Source Sans Pro 25 → 8\.52in width\)
 - Why it matters is 2 lines, max 3 \(Arial 20 → 8\.52in width\)
 
-The output should be the 5 stories with a headline, summary, and “why it matters” section, following the bolding and formatting rules above and following the guidelines in the Newsletter Style Guide\.
+The output should be the 5 stories with a headline, summary, and "why it matters" section, following the bolding and formatting rules above and following the guidelines in the Newsletter Style Guide\.
 
 ## <a id="_hi6kyae9sdvl"></a>__STEP 6: Secondary Stories Formatting__
 

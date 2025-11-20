@@ -113,18 +113,53 @@ You will receive {len(raw_stories)} raw news stories extracted from newsletters.
    - Keywords: launch, release, announce, unveil, introduce, debut, roll out, new model/product/feature/integration/partnership
 
 3. RANK STORIES:
-   Based on these criteria (in priority order):
-   a) Whether multiple newsletters mentioned it
-   b) Whether it appeared as a headline anywhere
-   c) Whether it involves a major AI company: {major_companies}
-   d) Whether it is truly significant (use judgment - big companies release minor things, small companies do amazing things)
-   e) Whether a casual AI reader would need to know this to feel "caught up" for the week
+   Use a WEIGHTED, EDITORIAL APPROACH that prioritizes strategic significance over mechanical metrics.
+
+   PRIMARY RANKING CRITERIA (in priority order):
+   a) "Why it matters" strength - Does this signal something bigger about AI's future, platform power, market structure, or societal impact?
+   b) Story type weighting - Apply category-specific priorities (see below)
+   c) Multiple newsletter mentions - 2+ for high-priority types, 3+ for others
+   d) Headline appearance - Was it featured as a headline?
+   e) Major AI company involvement: {major_companies} - But not sufficient alone for top ranking
+
+   STORY TYPE PRIORITIES:
+
+   HIGH-PRIORITY (boost ranking even with fewer mentions):
+   - Platform/ecosystem battles (e.g., Amazon blocking Perplexity, API restrictions)
+   - Controversy & safety (model removals, lawsuits, ethical concerns, regulatory action)
+   - Strategic moonshots (long-term visions like space data centers, AGI timelines, research breakthroughs)
+   - Market structure changes (new business models, pricing disruptions, competitive shifts)
+
+   MEDIUM-PRIORITY (standard newsworthiness):
+   - Major product launches (significant new capabilities from leading companies)
+   - Funding & valuations ($100M+ rounds or notable valuations)
+   - Enterprise adoption (major companies adopting AI transformatively)
+
+   LOWER-PRIORITY (require more mentions):
+   - Infrastructure capex (pure GPU/datacenter/cloud spending - unless strategic shifts)
+   - Corporate governance (exec comp, board changes - unless AI-related)
+   - Incremental updates (evolutionary features, not revolutionary)
+
+   SPECIAL RULES:
+   - CONTROVERSY BOOST: Stories with controversy, lawsuits, safety concerns, model removals, or regulatory action get +1-2 ranking tiers automatically
+   - LAUNCH vs NEWS: Research projects/long-term visions (like Project Suncatcher) are NEWS, not launches. Launches = products available now or within 3 months
+   - INFRASTRUCTURE CONTEXT: Large deals ($25B+) should be secondary unless they signal strategic shifts (e.g., diversification). Dollar amount alone ≠ newsworthy
 
 4. CATEGORIZE:
+   NEWS STORIES (Top 20):
    - Top 5 stories (most important)
-   - Next 4-5 secondary stories
-   - Launch list (all launches NOT in top 9-10 stories)
-   - Other (everything else - just count, no details)
+   - Secondary 5 stories (next 5 highest-ranked)
+   - Next 10 stories (ranked 11-20, for human review)
+
+   LAUNCHES (Top 20):
+   - Top 20 launches ranked using the SAME weighted approach as news stories
+   - Apply same ranking criteria: strategic significance, mention count, major companies
+   - Focus on launches with most significant impact on AI ecosystem
+   - Include why_it_matters for each
+
+   OTHER:
+   - Remaining launches (not in top 20)
+   - Other stories (everything else - just count, no details)
 
 OUTPUT FORMAT (JSON):
 {{
@@ -132,6 +167,7 @@ OUTPUT FORMAT (JSON):
     {{
       "headline": "Clean, compelling headline",
       "summary": "2-3 sentence summary of what happened",
+      "why_it_matters": "One sentence explaining the strategic significance",
       "sources": ["Newsletter 1", "Newsletter 2"],
       "mention_count": 2,
       "was_headline": true,
@@ -142,8 +178,10 @@ OUTPUT FORMAT (JSON):
       "companies_mentioned": ["OpenAI", "Google"]
     }}
   ],
-  "secondary_stories": [ /* same format */ ],
-  "launches": [ /* same format, all have is_launch: true */ ],
+  "secondary_stories": [ /* same format with why_it_matters */ ],
+  "next_10_stories": [ /* same format with why_it_matters - stories ranked 11-20 */ ],
+  "top_20_launches": [ /* same format with why_it_matters - top 20 launches ranked by importance */ ],
+  "other_launches": [ /* remaining launches - same format but no why_it_matters needed */ ],
   "other_stories_count": 0,
   "deduplication_summary": {{
     "original_story_count": {len(raw_stories)},
@@ -156,9 +194,9 @@ IMPORTANT:
 - Be aggressive with deduplication - if stories cover the same event, merge them
 - Use your judgment for ranking - follow the examples in the Newsletter Stories Example document
 - Review the example stories to understand story selection and prioritization
+- Include "why_it_matters" for top 20 stories (top 5 + secondary 5 + next 10) - explain strategic significance in one sentence
 - For "other_stories_count", just provide the count - DO NOT list all other stories (saves tokens)
-- Output ONLY valid JSON, no other text
-- We will add "why it matters" in a later step, focus on deduplication and ranking now"""
+- Output ONLY valid JSON, no other text"""
 
     # Create user prompt with all stories
     stories_json = json.dumps(raw_stories, indent=2)
@@ -229,8 +267,10 @@ Return your response as valid JSON only."""
         print(f"Stories merged:       {result.get('deduplication_summary', {}).get('stories_merged', 0)}")
         print(f"\nCATEGORIZATION:")
         print(f"  Top 5 stories:      {len(result.get('top_stories', []))}")
-        print(f"  Secondary stories:  {len(result.get('secondary_stories', []))}")
-        print(f"  Launches:           {len(result.get('launches', []))}")
+        print(f"  Secondary 5:        {len(result.get('secondary_stories', []))}")
+        print(f"  Next 10:            {len(result.get('next_10_stories', []))}")
+        print(f"  Top 20 launches:    {len(result.get('top_20_launches', []))}")
+        print(f"  Other launches:     {len(result.get('other_launches', []))}")
         print(f"  Other stories:      {result.get('other_stories_count', 0)}")
         print(f"{'='*70}")
 
@@ -285,9 +325,11 @@ def main():
         "deduplication_summary": ranked_data.get('deduplication_summary', {}),
         "top_stories": ranked_data.get('top_stories', []),
         "secondary_stories": ranked_data.get('secondary_stories', []),
-        "launches": ranked_data.get('launches', []),
+        "next_10_stories": ranked_data.get('next_10_stories', []),
+        "top_20_launches": ranked_data.get('top_20_launches', []),
+        "other_launches": ranked_data.get('other_launches', []),
         "other_stories_count": ranked_data.get('other_stories_count', 0),
-        "notes": "Deduplicated and ranked stories ready for human review (Step 3)"
+        "notes": "Deduplicated and ranked stories ready for human review (Step 3). Top 20 stories and top 20 launches include 'why_it_matters' for editorial review."
     }
 
     with open(output_file, 'w', encoding='utf-8') as f:
