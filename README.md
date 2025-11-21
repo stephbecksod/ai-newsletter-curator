@@ -1,29 +1,37 @@
 # AI Newsletter Curator
 
-Automated tool to process weekly AI newsletters from Gmail, extract news stories, deduplicate overlapping coverage, rank by importance, and generate formatted copy for your weekly AI news deck.
+Automated Claude Code skill for processing weekly AI newsletters from Gmail, extracting news stories, deduplicating overlapping coverage, ranking by strategic importance, and generating formatted copy for your weekly AI news deck.
 
 ## Overview
 
-This tool uses:
+This project provides a **Claude Code skill** that automates the complete newsletter curation workflow using:
+- **Claude Code** - Main interface and skill orchestration
 - **Gmail MCP Server** - Direct access to Gmail via Model Context Protocol
 - **Claude API** - AI-powered extraction, deduplication, ranking, and formatting
-- **Python** - Workflow orchestration and output management
+- **Python Scripts** - Newsletter extraction and ranking automation
 
 ## Features
 
 - ✉️ Reads newsletters from specific Gmail senders within a date range
 - 📰 Extracts only actual news stories (filters out tips, tools, tutorials)
 - 🔄 Deduplicates overlapping stories across multiple newsletters
-- 📊 Ranks stories by importance using multiple criteria
-- ✍️ Generates formatted copy in your specific writing style
+- 📊 Ranks stories using weighted editorial criteria (strategic significance over mention count)
+- 🧠 AI-powered research for top 5 stories with web searches
+- ✍️ Generates formatted copy with strict character count enforcement
 - 📝 Outputs ready-to-paste content for presentation decks
+- 👤 Human-in-the-loop review and approval before research
 
-## Prerequisites
+## Quick Start
 
-- **Python 3.8+**
-- **Node.js** (for Gmail MCP server)
-- **Anthropic API Key** (for Claude access)
-- **Gmail Account** (with newsletters)
+**📘 See [SETUP.md](SETUP.md) for complete setup instructions**
+
+### Prerequisites
+
+- **Claude Code** installed and configured
+- **Python 3.11+**
+- **Node.js and npm** (for Gmail MCP server)
+- **Anthropic API Key**
+- **Gmail Account** with AI newsletters
 
 ## Installation
 
@@ -91,22 +99,44 @@ On first MCP use:
 
 ## Usage
 
-### Basic Command
+### Using the Skill
 
-```bash
-python newsletter_curator.py --start 2025-11-04 --end 2025-11-10
+Once set up, simply ask Claude Code to curate your newsletter:
+
+```
+Curate newsletter from November 24 to December 1, 2025
 ```
 
-### Command Arguments
+Or:
 
-- `--start` (required): Start date in YYYY-MM-DD format
-- `--end` (required): End date in YYYY-MM-DD format
-
-### Example: Process Last Week's Newsletters
-
-```bash
-python newsletter_curator.py --start 2025-11-04 --end 2025-11-10
 ```
+Create my AI newsletter for this week (Nov 24-Dec 1)
+```
+
+The skill will automatically:
+1. Extract stories from Gmail newsletters
+2. Deduplicate and rank using weighted editorial criteria
+3. Present top 20 stories for your review
+4. Wait for your approval
+5. Research top 5 stories with web searches
+6. Format everything with strict character counts
+7. Generate final newsletter markdown
+
+### Manual Script Usage
+
+You can also run the Python scripts directly:
+
+**Extract stories:**
+```bash
+python extract_all_newsletters.py --start-date 2025-11-17 --end-date 2025-11-20
+```
+
+**Deduplicate and rank:**
+```bash
+python deduplicate_and_rank.py
+```
+
+The skill uses these scripts automatically.
 
 ## Workflow
 
@@ -207,17 +237,25 @@ Each file contains:
 
 ```
 ai-newsletter-curator/
+├── .claude/
+│   └── skills/
+│       └── newsletter-curator/     # Claude Code skill
+│           ├── SKILL.md            # Skill definition
+│           ├── workflow-guide.md   # Detailed workflow steps
+│           └── examples.md         # Usage examples
 ├── docs/                           # Reference documentation
 │   ├── Newsletter Copy Creation Workflow.md
 │   ├── Newsletter Style Guide.md
 │   └── Newsletter Stories Example.md
 ├── outputs/                        # Generated newsletters (gitignored)
 ├── .env                           # API keys (gitignored)
-├── .env.example                   # Environment template
 ├── .gitignore                     # Git exclusions
 ├── config.yaml                    # Configuration settings
-├── newsletter_curator.py          # Main script
-├── PROJECT_STATUS.md              # Development progress tracker
+├── extract_all_newsletters.py     # Newsletter extraction script
+├── deduplicate_and_rank.py        # Story ranking script
+├── gmail_text_extractor.py        # Gmail API helper
+├── PROJECT_STATUS.md              # Development progress
+├── SETUP.md                       # Complete setup guide
 ├── README.md                      # This file
 └── requirements.txt               # Python dependencies
 ```
