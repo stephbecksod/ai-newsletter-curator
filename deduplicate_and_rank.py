@@ -287,6 +287,14 @@ Return your response as valid JSON only."""
 
 def main():
     """Main deduplication and ranking workflow."""
+    import glob
+    import argparse
+
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Deduplicate and rank newsletter stories')
+    parser.add_argument('--input-file', help='Input raw stories JSON file (optional, auto-detects latest if not provided)')
+    args = parser.parse_args()
+
     print(f"\n{'='*70}")
     print("AI NEWSLETTER CURATOR - STEP 2: DEDUPLICATION & RANKING")
     print(f"{'='*70}")
@@ -297,8 +305,17 @@ def main():
     style_guide = load_style_guide()
     example_stories = load_example_stories()
 
-    # Load raw stories
-    input_file = "outputs/raw_stories_2025-11-03_to_2025-11-10_COMPLETE.json"
+    # Load raw stories - auto-detect latest file if not specified
+    if args.input_file:
+        input_file = args.input_file
+    else:
+        # Find the most recent raw_stories file
+        raw_files = glob.glob("outputs/raw_stories_*_COMPLETE.json")
+        if not raw_files:
+            print("[ERROR] No raw stories files found in outputs/")
+            return
+        input_file = max(raw_files, key=lambda f: Path(f).stat().st_mtime)
+
     print(f"\n[1] Loading raw stories from: {input_file}")
 
     with open(input_file, 'r', encoding='utf-8') as f:
@@ -306,6 +323,10 @@ def main():
 
     raw_stories = raw_data['stories']
     print(f"[OK] Loaded {len(raw_stories)} raw stories")
+
+    # Extract date range for output filename
+    start_date = raw_data['date_range']['start']
+    end_date = raw_data['date_range']['end']
 
     # Deduplicate and rank
     ranked_data = deduplicate_and_rank_stories(
@@ -316,8 +337,8 @@ def main():
         example_stories
     )
 
-    # Save ranked stories
-    output_file = "outputs/ranked_stories_2025-11-03_to_2025-11-10.json"
+    # Save ranked stories with dynamic filename based on date range
+    output_file = f"outputs/ranked_stories_{start_date}_to_{end_date}.json"
     output_data = {
         "ranking_date": datetime.now().strftime("%Y-%m-%d"),
         "date_range": raw_data['date_range'],

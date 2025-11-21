@@ -52,7 +52,10 @@ def extract_stories_from_newsletters(
     Returns:
         List of extracted news stories
     """
-    anthropic_client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    anthropic_client = Anthropic(
+        api_key=os.getenv("ANTHROPIC_API_KEY"),
+        timeout=600.0  # 10 minute timeout
+    )
 
     all_stories = []
 
@@ -189,6 +192,14 @@ Extract all news stories and return them as JSON."""
 
 def main():
     """Main extraction workflow."""
+    import argparse
+
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Extract news stories from AI newsletters')
+    parser.add_argument('--start-date', required=True, help='Start date (YYYY-MM-DD)')
+    parser.add_argument('--end-date', required=True, help='End date (YYYY-MM-DD)')
+    args = parser.parse_args()
+
     print("=" * 70)
     print("NEWSLETTER EXTRACTION - Plain Text Approach")
     print("=" * 70)
@@ -203,8 +214,8 @@ def main():
     extractor.authenticate()
 
     # Build search query
-    start_date = "2025-11-03"
-    end_date = "2025-11-10"
+    start_date = args.start_date
+    end_date = args.end_date
 
     sender_queries = [f"from:{sender}" for sender in config['newsletter_sources']]
     sender_query = " OR ".join(sender_queries)
