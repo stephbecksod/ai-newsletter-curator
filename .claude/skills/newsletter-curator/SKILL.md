@@ -80,9 +80,7 @@ python deduplicate_and_rank.py
 
 1. **For each of the Top 5 stories:**
    - Review original newsletter content
-   - Follow any URLs included in the story data
-   - Perform web search using `WebSearch` for 1-2 additional articles
-   - Use `WebFetch` to read key articles
+   - Follow any URLs included in the story data using `WebFetch`
 2. **Update story summaries** with:
    - More accurate details from research
    - Critical insights not in original newsletters
@@ -110,8 +108,14 @@ python deduplicate_and_rank.py
 
 **Character count targets (CRITICAL):**
 - Headlines: ~50 characters (range: 42-62)
-- Summaries: ~233 characters (range: 202-288)
+- Summaries: ~233 characters (range: 202-288) — **aim for lower end**
 - Why it matters: ~124 characters (range: 85-165)
+
+**Numbers and metrics (CRITICAL):**
+- Use restraint with specific numbers — include only when critical to the story
+- ✅ Include: Major dollar amounts, key timeframes, scale that defines the story
+- ❌ Avoid: Exact benchmark scores, precise percentages, technical metric names
+- Default to narrative over numbers (e.g., "outperformed on benchmarks" not "95% vs 71%")
 
 ### STEP 6: Format Secondary 5 Stories
 
@@ -207,7 +211,7 @@ The skill will automatically:
 - **Always wait for user approval** in Step 3 before proceeding
 - **Character counts are critical** - the output must fit in slide layouts
 - **Follow examples exactly** - they define the voice and style
-- **Research improves quality** - don't skip web searches for top 5
+- **Research improves quality** - follow URLs from newsletters for top 5
 - **Launches are separate** - don't mix launches with news stories
 - Gmail MCP server must be configured and authenticated
 

@@ -158,7 +158,7 @@ Claude must __wait for your approval__ before producing final formatted output\.
 
 ## <a id="_kpnkttf8f4bn"></a>__STEP 4: Research__
 
-Once the story list is approved, Claude should research each of the top 5 stories by reviewing the information in the newsletters about the stories, following any URLs that link to deeper stories, and doing a web search and reviewing 1\-2 other articles about these stories, if available\. Once Claude has completed research for these stories, it should review the summaries and why it matters and rewrite, capturing the most critical components of the stories for the newsletter\. The original copy may not change based on this research, but if new or interesting viewpoints or facts are uncovered, consider updating\.
+Once the story list is approved, Claude should research each of the top 5 stories by reviewing the information in the newsletters about the stories and following any URLs that link to deeper stories\. Once Claude has completed research for these stories, it should review the summaries and why it matters and rewrite, capturing the most critical components of the stories for the newsletter\. The original copy may not change based on this research, but if new or interesting viewpoints or facts are uncovered, consider updating\.
 
 ## <a id="_8y5h6x9nwld8"></a>__STEP 5: Top 5 Story Formatting__
 
@@ -177,10 +177,22 @@ Each story must have a headline, a summary, and a why it matters section\.
 __CRITICAL:__ Stories must be concise\. Target these character counts based on historical examples:
 
 - __Headlines:__ ~50 characters \(range: 42\-62 characters\)
-- __Summaries:__ ~233 characters \(range: 202\-288 characters\)
+- __Summaries:__ ~233 characters \(range: 202\-288 characters\) — __aim for the lower end of this range__
 - __Why it matters:__ ~124 characters \(range: 85\-165 characters\)
 
-These targets ensure content fits properly in the slide layout without being too verbose\. When drafting, count characters and edit ruthlessly to stay within these ranges\.
+These targets ensure content fits properly in the slide layout without being too verbose\. When drafting, count characters and edit ruthlessly to stay within these ranges\. __Prioritize brevity__ — every word must earn its place\.
+
+### <a id="_numbers_usage"></a>__Numbers and Metrics Guidelines__
+
+__Use restraint with specific numbers__\. Include them only when critical to the story:
+
+✅ __Include:__ Major dollar amounts, key timeframes, scale that defines the story
+❌ __Avoid:__ Exact benchmark scores, precise percentages, technical metric names, competing numbers
+
+__Default to narrative over numbers__ — readers want the story, not a data sheet\. For example:
+- Use "outperformed on benchmarks" not "achieved 95% vs 71% on AIME 2025"
+- Use "mid November" not "November 18"
+- Use "multibillion\-dollar deal" not specific amounts unless the amount is the story
 
 ### <a id="_fh9nqgcfir51"></a>__Slide layout constraints Claude must write to__
 

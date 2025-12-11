@@ -242,24 +242,19 @@ Enrich the Top 5 stories with additional context, accurate details, and stronger
    - If story has URLs in the data, read them with WebFetch
    - Extract key facts, dates, exact numbers
 
-3. **Web search for additional articles**
-   - Search query: Story headline + key companies
-   - Example: "Amazon Perplexity shopping agents legal threat"
-   - Read 1-2 top results
-
-4. **Gather key information:**
+3. **Gather key information:**
    - Exact dollar amounts, percentages, dates
    - Company statements or quotes
    - Strategic implications
    - Industry reaction
    - Technical details that matter
 
-5. **Update story fields:**
+4. **Update story fields:**
    - **Summary**: Make more accurate with research findings
    - **Why it matters**: Strengthen with insights from research
    - Keep character counts in mind for later formatting
 
-6. **Save updated data** back to ranked JSON file
+5. **Save updated data** back to ranked JSON file
 
 #### Research Example
 
@@ -301,8 +296,42 @@ Apply style guide formatting with strict character count enforcement.
 **CRITICAL - These must be followed exactly:**
 
 - **Headlines:** ~50 characters (range: 42-62 characters)
-- **Summaries:** ~233 characters (range: 202-288 characters)
+- **Summaries:** ~233 characters (range: 202-288 characters) — **aim for lower end of range**
 - **Why it matters:** ~124 characters (range: 85-165 characters)
+
+#### Numbers and Metrics Guidelines
+
+**Use restraint with specific numbers.** Include them only when critical to understanding the story:
+
+✅ **Include when critical:**
+- Major dollar amounts ($10B valuation, multibillion-dollar deal)
+- Key timeframes (2026, mid November, within a decade)
+- Scale that defines the story (2M+ robots, 30 organizations)
+
+❌ **Avoid excessive specifics:**
+- Exact benchmark scores (use "outperformed on benchmarks" not "95% vs 71% on AIME 2025")
+- Precise percentages unless critical (use "significantly higher" not "15.3% higher")
+- Technical benchmark names (use "coding benchmarks" not "GPQA Diamond")
+- Exact Elo scores, model version numbers, or other technical metrics
+- Multiple competing numbers in one sentence
+
+**Default to narrative over numbers** — readers want the story, not a data sheet.
+
+**Example - Before (too many numbers):**
+```
+Google launched Gemini 3 Pro on November 18—just six days after GPT-5.1—achieving
+a record 1,501 Elo score on LMArena, the first model to cross the 1,500 threshold.
+It outperformed GPT-5.1 on math (95% vs 71% on AIME 2025), reasoning (91.9% on
+GPQA Diamond), and coding benchmarks.
+```
+
+**Example - After (narrative-focused):**
+```
+Google's Gemini 3 Pro and OpenAI's GPT-5.1 both launched mid November, and Gemini
+outperformed on math, reasoning and coding benchmarks. In a leaked memo, Altman
+warned of rough vibes and that Google's progress could create temporary economic
+headwinds.
+```
 
 #### Formatting Rules
 
